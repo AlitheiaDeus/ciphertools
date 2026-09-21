@@ -18,7 +18,7 @@ def selector_menu():
     def process_input():
         selected_cipher_name = cipher_var.get()
         input_text = input_text_entry.get("1.0", tk.END).strip()
-        shift_value = shift_entry.get()
+        # shift_value = shift_entry.get()
         mode = mode_var.get()
 
         try:
@@ -26,17 +26,10 @@ def selector_menu():
             for name, func in cipher_functions:
                 if name == selected_cipher_name:
                     selected_cipher_func = func
+                    output_text = selected_cipher_func(input_text)  # Call the selected function
                     break
-
-            if selected_cipher_func:
-                if selected_cipher_name == "caesar_cipher": #special case for caesar
-                  shift = int(shift_value)
-                  output_text = selected_cipher_func(input_text, shift, mode)
                 else:
-                  output_text = selected_cipher_func(input_text)  # Call the selected function
-
-            else:
-                output_text = "No cipher selected."
+                    output_text = "No cipher selected."
 
             output_text_area.delete("1.0", tk.END)
             output_text_area.insert(tk.END, output_text)
@@ -59,33 +52,17 @@ def selector_menu():
     # Cipher Selection (Dynamically populated)
     cipher_label = ttk.Label(window, text="Select Cipher:")
     cipher_label.pack(pady=(0, 5))
-
+    
     cipher_var = tk.StringVar(value=cipher_names[0] if cipher_names else "")  # Default selection
     cipher_dropdown = ttk.Combobox(window, textvariable=cipher_var, values=cipher_names, state="readonly")
     cipher_dropdown.pack()
     
-    # Shift Value (for Caesar Cipher - Only show if Caesar is selected)
-    def update_shift_visibility(*args): #callback function
-        if cipher_var.get() == "caesar_cipher":
-            shift_label.pack(pady=(5, 0))
-            shift_entry.pack()
-            mode_label.pack(pady=(5, 0))
-            mode_dropdown.pack()
-        else:
-            shift_label.pack_forget()
-            shift_entry.pack_forget()
-            mode_label.pack_forget()
-            mode_dropdown.pack_forget()
-
-    shift_label = ttk.Label(window, text="Shift Value (for Caesar):")
-    shift_entry = ttk.Entry(window)
-    mode_label = ttk.Label(window, text="Mode (for Caesar):")
+    mode_label = ttk.Label(window, text="Mode:")  # Now for all ciphers
+    mode_label.pack(pady=(5, 0))
     modes = ["encrypt", "decrypt"]
     mode_var = tk.StringVar(value=modes[0])
     mode_dropdown = ttk.Combobox(window, textvariable=mode_var, values=modes, state="readonly")
-    
-    cipher_var.trace_add("write", update_shift_visibility) #trace variable changes and call function
-    update_shift_visibility() #call once to initialize
+    mode_dropdown.pack()
     
     # Process Button
     process_button = ttk.Button(window, text="Process", command=process_input)

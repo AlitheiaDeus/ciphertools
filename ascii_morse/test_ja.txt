@@ -1,0 +1,14 @@
+================================================================================
+UNSPACED MORSE CODE SOLVER - PERMUTATION DUMP REPORT
+================================================================================
+Raw Input:          ...---...
+Normalized Morse:   ...---... (9 symbols)
+Alphabet:           Japanese Wabun
+Language:           JA
+Dictionary Size:    29 words
+Elapsed Time:       0.000 seconds
+================================================================================
+
+NO VALID WORD PERMUTATIONS FOUND.
+Tip: If the stream contains strange symbols, check --all-transforms or --allow-single-letters.
+================================================================================
