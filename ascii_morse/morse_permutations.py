@@ -264,6 +264,22 @@ def write_permutations_file(
 
     total_permutations = sum(len(res) for lvl in results_by_level.values() for res in lvl.values())
 
+    # Count breakdown by variant / transform type
+    variant_totals: Dict[str, int] = {}
+    for lvl_results in results_by_level.values():
+        for vname, results in lvl_results.items():
+            variant_totals[vname] = variant_totals.get(vname, 0) + len(results)
+
+    # Count breakdown by level (Full vs Chops)
+    level_totals: Dict[int, int] = {
+        lvl: sum(len(results) for results in lvl_results.values())
+        for lvl, lvl_results in results_by_level.items()
+    }
+
+    # Bead / symbol count breakdown
+    n_dits = normalized_stream.count('.')
+    n_dahs = normalized_stream.count('-')
+
     # 1. Output as JSON if requested or if filename ends in .json
     if as_json or filepath.lower().endswith('.json'):
         data = {
@@ -271,11 +287,14 @@ def write_permutations_file(
                 "raw_input": raw_input,
                 "normalized_morse": normalized_stream,
                 "symbols": len(normalized_stream),
+                "symbol_counts": {"dits": n_dits, "dahs": n_dahs},
                 "alphabet": alphabet_name,
                 "language": language,
                 "dictionary_size": dict_word_count,
                 "elapsed_seconds": round(elapsed_time, 3),
                 "total_permutations": total_permutations,
+                "variant_breakdown": variant_totals,
+                "level_breakdown": {("full" if k == 0 else f"chop_{k}"): v for k, v in level_totals.items()},
             },
             "permutations": {},
         }
@@ -310,12 +329,20 @@ def write_permutations_file(
     # 2. Output as lean, high-density text format (LLM friendly)
     lines: List[str] = [
         f"# Morse Permutation Report",
-        f"# Input:    {normalized_stream} ({len(normalized_stream)} symbols)",
+        f"# Input:    {normalized_stream} ({len(normalized_stream)} symbols: {n_dits} dits '.', {n_dahs} dahs '-')",
         f"# Language: {language.upper()} | Alphabet: {alphabet_name}",
         f"# Lexicon:  {dict_word_count:,} words | Time: {elapsed_time:.3f}s",
+        f"# Matches:  {total_permutations:,} total permutation(s) found",
     ]
-    if chop_meta:
-        lines.append(f"# Chops:    {len(chop_meta)} symmetric level(s) evaluated")
+    if variant_totals:
+        var_breakdown_str = " | ".join(f"{v}: {cnt:,}" for v, cnt in variant_totals.items())
+        lines.append(f"# Variants: {var_breakdown_str}")
+    if chop_meta and len(chop_meta) > 0:
+        lvl_breakdown_str = " | ".join(
+            f"{'Full' if lvl == 0 else f'Chop {lvl}'}: {cnt:,}"
+            for lvl, cnt in sorted(level_totals.items())
+        )
+        lines.append(f"# Chops:    {len(chop_meta)} symmetric level(s) evaluated ({lvl_breakdown_str})")
     lines.append("")
 
     if total_permutations == 0:

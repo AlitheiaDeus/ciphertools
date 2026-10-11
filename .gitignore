@@ -9,3 +9,14 @@ venv/
 # Ignore operating system-generated files
 .DS_Store  # macOS
 Thumbs.db  # Windows
+
+# Agent instructions and landmarks
+AGENTS.md
+
+# Solution dumps and working puzzle outputs
+solves/
+solutions/
+output/
+*_solve.*
+permutations.txt
+scratch_*.txt
