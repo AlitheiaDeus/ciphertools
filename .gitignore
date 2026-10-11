@@ -20,3 +20,9 @@ output/
 *_solve.*
 permutations.txt
 scratch_*.txt
+code.txt
+code1*.txt
+code1*.xlsx
+ascii_morse/test_*.txt
+ascii_morse/test_output.json
+ascii_morse/new_puzzle.txt

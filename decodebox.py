@@ -32,5 +32,8 @@ def character_frequency_sorted(filename):
     print(f"\nTotal unique characters: {len(char_counts)}")
 
 # Example usage:
-filename = "code1.txt"
+import os
+filename = os.path.join(os.path.dirname(__file__), "solves", "code1", "code1.txt")
+if not os.path.exists(filename):
+    filename = "code1.txt"
 character_frequency_sorted(filename)
